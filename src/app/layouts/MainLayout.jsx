@@ -1,11 +1,14 @@
 import React from "react";
-import { useAuthHook } from "../../features/auth/hooks/useAuthHook";
+import Navbar from "../../shared/ui/components/Navbar";
+import { Outlet } from "react-router";
 
 const MainLayout = () => {
-  const { logoutUser } = useAuthHook();
   return (
-    <div>
-      MainLayout <button onClick={logoutUser}>Logout</button>
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+      <main className="ml-55 p-6">
+        <Outlet />
+      </main>
     </div>
   );
 };
