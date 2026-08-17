@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -6,8 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { addUser, removeUser } from "../state/authSlice";
 export const useAuthHook = () => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.auth.user);
-  console.log(selector);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
   const navigate = useNavigate();
 
   const [walletlyUsers, setWalletlyUsers] = useState(
@@ -35,8 +36,10 @@ export const useAuthHook = () => {
     const newUser = { id: Date.now(), ...userData };
     const updatedUsers = [...walletlyUsers, newUser];
     setWalletlyUsers(updatedUsers);
-    dispatch(addUser(newUser));
+    const { password, ...safeUser } = updatedUsers;
+    dispatch(addUser(safeUser));
     localStorage.setItem("walletly-users", JSON.stringify(updatedUsers));
+    localStorage.setItem("walletlyCurrentUser", JSON.stringify(newUser));
     toast.success("register successful");
     reset();
     navigate("/main");
@@ -56,8 +59,9 @@ export const useAuthHook = () => {
         user.password === userData.password,
     );
     if (!loggedInUser) return toast.error("Invalid email or password");
-    dispatch(addUser(loggedInUser));
-    localStorage.setItem("walletlyCurrentUser", JSON.stringify(loggedInUser));
+    const { password, ...safeUser } = loggedInUser;
+    dispatch(addUser(safeUser));
+    localStorage.setItem("walletlyCurrentUser", JSON.stringify(safeUser));
     toast.success("login successful");
     navigate("/main");
   };
@@ -78,11 +82,6 @@ export const useAuthHook = () => {
     }
   };
 
-  const hydrateUser = () => {
-    const user = JSON.parse(localStorage.getItem("walletlyCurrentUser")) || {};
-    return user;
-  };
-
   return {
     register,
     handleSubmit,
@@ -92,7 +91,6 @@ export const useAuthHook = () => {
     loginUser,
     logoutUser,
     dispatch,
-    selector,
-    hydrateUser,
+    isAuthenticated,
   };
 };

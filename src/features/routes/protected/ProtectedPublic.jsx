@@ -3,8 +3,8 @@ import { useAuthHook } from "../../auth/hooks/useAuthHook";
 import { Navigate, Outlet } from "react-router";
 
 const ProtectedPublic = () => {
-  const { selector } = useAuthHook();
-  if (selector) {
+  const { isAuthenticated } = useAuthHook();
+  if (isAuthenticated) {
     return <Navigate to={"/main"} />;
   }
   return (

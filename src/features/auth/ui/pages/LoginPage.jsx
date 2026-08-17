@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from "lucide-react";
-import React, { useState } from "react";
-import { Navigate, NavLink } from "react-router";
+import { useState } from "react";
+import { NavLink } from "react-router";
 import { useAuthHook } from "../../hooks/useAuthHook";
 
 const LoginPage = () => {
