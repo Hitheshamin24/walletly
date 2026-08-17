@@ -36,7 +36,7 @@ export const useAuthHook = () => {
     const newUser = { id: Date.now(), ...userData };
     const updatedUsers = [...walletlyUsers, newUser];
     setWalletlyUsers(updatedUsers);
-    const { password, ...safeUser } = updatedUsers;
+    const { password, ...safeUser } = newUser;
     dispatch(addUser(safeUser));
     localStorage.setItem("walletly-users", JSON.stringify(updatedUsers));
     localStorage.setItem("walletlyCurrentUser", JSON.stringify(newUser));
