@@ -17,7 +17,7 @@ const LoginPage = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/walletlyLog.png"
+            src="/walletlyLogo.png"
             alt="Walletly"
             className="w-11 h-11 object-contain"
           />

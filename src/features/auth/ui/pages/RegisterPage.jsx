@@ -16,7 +16,7 @@ const RegisterPage = () => {
         {/* Logo */}
         <div className="flex justify-center mb-1">
           <img
-            src="/walletlyLog.png"
+            src="/walletlyLogo.png"
             alt="Walletly"
             className="w-11 h-11 object-contain"
           />
