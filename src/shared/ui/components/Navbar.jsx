@@ -10,8 +10,11 @@ import {
   Plus,
 } from "lucide-react";
 import { NavLink } from "react-router";
+import { useTransactionContext } from "../../context/TransactionFormContext";
 
 const Navbar = () => {
+
+  const {setShowTransactionModal}=useTransactionContext()
   const menuItems = [
     {
       name: "Dashboard",
@@ -65,7 +68,10 @@ const Navbar = () => {
       </div>
 
       {/* Quick Add */}
-      <button className="mb-5 flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-teal-700 text-[11px] font-semibold text-white transition hover:bg-teal-800 cursor-pointer ">
+      <button
+        onClick={() => setShowTransactionModal(true)}
+        className="mb-5 flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-teal-700 text-[11px] font-semibold text-white transition hover:bg-teal-800 cursor-pointer "
+      >
         <Plus size={13} strokeWidth={2.5} />
         Quick Add
       </button>

@@ -1,10 +1,13 @@
 import React from "react";
 import AppRoutes from "./features/routes/AppRoutes";
+import { TransactionProvider } from "./shared/context/TransactionFormContext";
 
 const App = () => {
   return (
     <div>
-      <AppRoutes />
+      <TransactionProvider>
+        <AppRoutes />
+      </TransactionProvider>
     </div>
   );
 };
