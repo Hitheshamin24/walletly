@@ -21,6 +21,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
   } = useAccountHook();
 
   const selectedType = watch("accountType");
+  const selectedCurrency = watch("currency");
 
   useEffect(() => {
     if (accountToEdit) {
@@ -32,6 +33,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
         initialBalance:
           accountToEdit.initialBalance || accountToEdit.currentBalance,
         color: accountToEdit.color,
+        currency: accountToEdit.currency,
       });
     } else {
       reset({
@@ -143,7 +145,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
           {/* Account Name */}
           <div className="mb-3">
             <label className="mb-1 block text-[10px] font-medium text-slate-700">
-              Account Name
+              {selectedType === "wallet" ? "Wallet name" : "Account Name"}
             </label>
             <input
               {...register("accountName", {
@@ -158,6 +160,20 @@ const AccountForm = ({ onClose, accountToEdit }) => {
           {/* Institution & Last 4 Digits */}
           {selectedType !== "wallet" && (
             <div className="mb-3 grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-[10px] font-medium text-slate-700">
+                  Bank / Institution
+                </label>
+                <input
+                  {...register("bank", {
+                    required: "bank Name is required",
+                  })}
+                  type="text"
+                  placeholder="e.g. SBI Bank"
+                  className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-[10px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
+                />
+              </div>
+
               <div>
                 <label className="mb-1 block text-[10px] font-medium text-slate-700">
                   Last 4 Digits
@@ -187,7 +203,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                $
+                {selectedCurrency || "$"}
               </span>
               <input
                 {...register("initialBalance", {
@@ -224,7 +240,12 @@ const AccountForm = ({ onClose, accountToEdit }) => {
               <label className="mb-1 block text-[10px] font-medium text-slate-700">
                 Currency
               </label>
-              <select className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-[10px] text-slate-600 outline-none transition focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20">
+              <select
+                {...register("currency", {
+                  required: "select currency ",
+                })}
+                className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-[10px] text-slate-600 outline-none transition focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
+              >
                 <option value={"$"}>USD ($)</option>
                 <option value={"€"}>EUR (€)</option>
                 <option value={"£"}>GBP (£)</option>

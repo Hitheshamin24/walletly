@@ -32,12 +32,14 @@ export const useAccountHook = () => {
     );
     if (exists) return toast.error("Account number already exists");
 
+    const initialBalance = Number(data.initialBalance);
     if (accountToEdit) {
       dispatch(
         updateAccount({
           ...accountToEdit,
           ...data,
-          currentBalance: data.initialBalance,
+          initialBalance,
+          currentBalance: initialBalance,
         }),
       );
       toast.success("Account updated successfully");
@@ -46,7 +48,8 @@ export const useAccountHook = () => {
         addAccount({
           id: Date.now(),
           ...data,
-          currentBalance: data.initialBalance,
+          initialBalance,
+          currentBalance: initialBalance,
         }),
       );
       toast.success("Account added successfully");
@@ -68,6 +71,31 @@ export const useAccountHook = () => {
     }
   };
 
+  const calculateTotal = () => {
+    const totalInitial = accounts.reduce(
+      (acc, curr) => acc + curr.initialBalance,
+      0,
+    );
+    const currentTotal = accounts.reduce(
+      (acc, curr) => acc + curr.currentBalance,
+      0,
+    );
+    const totalCurrency = accounts.reduce((acc, curr) => {
+      const sym = curr.currency || "$";
+      acc[sym] = (acc[sym] || 0) + curr.currentBalance;
+      return acc;
+    }, {});
+    const keys = Object.keys(totalCurrency);
+
+    const profitPercentage =
+      totalInitial === 0 && currentTotal === 0
+        ? 0
+        : totalInitial === 0 && currentTotal > 0
+          ? 100
+          : (((currentTotal - totalInitial) / totalInitial) * 100).toFixed(2);
+    return { totalInitial, profitPercentage, totalCurrency, keys };
+  };
+
   return {
     register,
     handleSubmit,
@@ -78,5 +106,6 @@ export const useAccountHook = () => {
     handleError,
     errors,
     reset,
+    calculateTotal,
   };
 };

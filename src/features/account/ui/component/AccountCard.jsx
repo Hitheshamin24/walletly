@@ -1,4 +1,4 @@
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { useAccountHook } from "../../hooks/useAccountsHook";
 
@@ -32,12 +32,6 @@ const DEFAULT_STYLE = {
   badge: "bg-slate-100 text-slate-500",
 };
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-  }).format(Number(value) || 0);
 
 const AccountCard = ({
   icon: Icon,
@@ -92,19 +86,20 @@ const AccountCard = ({
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenMenuModal(false)}
                 />
-                <div className="absolute right-0 top-8 z-50 w-28 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                <div className="absolute right-0 top-8 z-50 w-28 overflow-hidden rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
                   <button
                     type="button"
-                    className="w-full px-3 py-2 text-left text-[11px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-teal-700"
                     onClick={() => {
                       onEdit();
                       setOpenMenuModal(false);
                     }}
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-teal-700"
                   >
-                    ✏️ Edit
+                    <Pencil size={13} strokeWidth={2} />
+                    <span>Edit</span>
                   </button>
 
-                  <div className="mx-3 border-t border-slate-100" />
+                  <div className="mx-2 my-0.5 border-t border-slate-100" />
 
                   <button
                     type="button"
@@ -112,9 +107,10 @@ const AccountCard = ({
                       deleteAccount(account);
                       setOpenMenuModal(false);
                     }}
-                    className="w-full px-3 py-2 text-left text-[11px] font-medium text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[11px] font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
                   >
-                    🗑️ Delete
+                    <Trash size={13} strokeWidth={2} />
+                    <span>Delete</span>
                   </button>
                 </div>
               </>
@@ -128,7 +124,7 @@ const AccountCard = ({
             {balanceLabel}
           </p>
           <p className="mt-1 text-xl font-bold text-slate-800">
-            {formatCurrency(account?.currentBalance)}
+            {account.currency}{account?.currentBalance}
           </p>
         </div>
 
