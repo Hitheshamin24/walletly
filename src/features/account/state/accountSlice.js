@@ -1,6 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
+
+const getInitialUser = () => {
+  const { id } = JSON.parse(localStorage.getItem("walletlyCurrentUser"));
+  return id;
+};
+const getCurrentAccounts = () => {
+  return (
+    JSON.parse(localStorage.getItem(`walletly-accounts-${getInitialUser()}`)) ||
+    []
+  );
+};
 const initialState = {
-  accounts: [],
+  accounts: getCurrentAccounts(),
 };
 const accountSlice = createSlice({
   name: "accounts",
@@ -8,10 +19,18 @@ const accountSlice = createSlice({
   reducers: {
     addAccount: (state, action) => {
       state.accounts.push(action.payload);
+      localStorage.setItem(
+        `walletly-accounts-${getInitialUser()}`,
+        JSON.stringify(state.accounts),
+      );
     },
     removeAccount: (state, action) => {
       state.accounts = state.accounts.filter(
         (account) => account.id !== action.payload,
+      );
+      localStorage.setItem(
+        `walletly-accounts-${getInitialUser()}`,
+        JSON.stringify(state.accounts),
       );
     },
     updateAccount: (state, action) => {
@@ -19,6 +38,10 @@ const accountSlice = createSlice({
         (account) => account.id === action.payload.id,
       );
       if (index !== -1) state.accounts[index] = action.payload;
+      localStorage.setItem(
+        `walletly-accounts-${getInitialUser()}`,
+        JSON.stringify(state.accounts),
+      );
     },
   },
 });

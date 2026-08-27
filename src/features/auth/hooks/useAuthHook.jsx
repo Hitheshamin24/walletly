@@ -1,14 +1,12 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { addUser, removeUser } from "../state/authSlice";
+import { useState } from "react";
 export const useAuthHook = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  console.log(isAuthenticated);
   const navigate = useNavigate();
 
   const [walletlyUsers, setWalletlyUsers] = useState(
@@ -36,6 +34,7 @@ export const useAuthHook = () => {
     const newUser = { id: Date.now(), ...userData };
     const updatedUsers = [...walletlyUsers, newUser];
     setWalletlyUsers(updatedUsers);
+    // eslint-disable-next-line no-unused-vars
     const { password, ...safeUser } = newUser;
     dispatch(addUser(safeUser));
     localStorage.setItem("walletly-users", JSON.stringify(updatedUsers));
@@ -47,22 +46,18 @@ export const useAuthHook = () => {
 
   // login authentication
   const loginUser = (data) => {
-    const userData = { ...data };
-    const email = userData.email;
-    const existsUser = walletlyUsers.some(
-      (user) => user.email.toLowerCase() === email.toLowerCase(),
-    );
-    if (!existsUser) return toast.error("user email doesn't exists");
+    const email = data.email.toLowerCase();
     const loggedInUser = walletlyUsers.find(
       (user) =>
-        user.email.toLowerCase() === email.toLowerCase() &&
-        user.password === userData.password,
+        user.email.toLowerCase() === email &&
+        user.password === data.password,
     );
     if (!loggedInUser) return toast.error("Invalid email or password");
+    // eslint-disable-next-line no-unused-vars
     const { password, ...safeUser } = loggedInUser;
     dispatch(addUser(safeUser));
     localStorage.setItem("walletlyCurrentUser", JSON.stringify(safeUser));
-    toast.success("login successful");
+    toast.success("Login successful");
     navigate("/main");
   };
 

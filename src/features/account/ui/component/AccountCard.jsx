@@ -1,54 +1,143 @@
-import React from "react";
+import { EllipsisVertical } from "lucide-react";
+import { useState } from "react";
+import { useAccountHook } from "../../hooks/useAccountsHook";
+
+/* Per-account-type color tokens */
+const TYPE_STYLES = {
+  bank: {
+    gradient: "from-teal-500 to-emerald-400",
+    iconBg: "bg-teal-50 text-teal-600",
+    badge: "bg-teal-50 text-teal-600",
+  },
+  wallet: {
+    gradient: "from-violet-500 to-purple-400",
+    iconBg: "bg-violet-50 text-violet-600",
+    badge: "bg-violet-50 text-violet-600",
+  },
+  credit: {
+    gradient: "from-rose-500 to-pink-400",
+    iconBg: "bg-rose-50 text-rose-600",
+    badge: "bg-rose-50 text-rose-600",
+  },
+  investment: {
+    gradient: "from-amber-500 to-yellow-400",
+    iconBg: "bg-amber-50 text-amber-600",
+    badge: "bg-amber-50 text-amber-600",
+  },
+};
+
+const DEFAULT_STYLE = {
+  gradient: "from-slate-400 to-slate-300",
+  iconBg: "bg-slate-100 text-slate-500",
+  badge: "bg-slate-100 text-slate-500",
+};
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+  }).format(Number(value) || 0);
 
 const AccountCard = ({
   icon: Icon,
-  iconBg,
-  name,
-  type,
-  balance,
+  onEdit,
   balanceLabel = "Available Balance",
-  badge,
-  syncLabel = "↻ Synced 2m ago",
-  actionLabel = "View Activity",
+  account,
 }) => {
+  const { deleteAccount } = useAccountHook();
+  const [openMenuModal, setOpenMenuModal] = useState(false);
+
+  const typeKey = account?.accountType?.toLowerCase();
+  const styles = TYPE_STYLES[typeKey] ?? DEFAULT_STYLE;
+
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2">
-          <div
-            className={`flex h-8 w-8 items-center justify-center rounded-full text-xs ${iconBg}`}
-          >
-            {Icon && <Icon size={12} strokeWidth={2} />}
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className={`h-1 w-full bg-linear-to-r ${styles.gradient}`} />
+
+      <div className="flex flex-col gap-4 p-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2.5">
+            <div
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${styles.iconBg}`}
+            >
+              {Icon && <Icon size={15} strokeWidth={2} />}
+            </div>
+
+            <div className="min-w-0">
+              <h3 className="truncate text-[13px] font-semibold leading-tight text-slate-800">
+                {account?.accountName}
+              </h3>
+              <span
+                className={`mt-0.5 inline-block rounded-full px-1.5 py-0.5 text-[9px] font-medium capitalize tracking-wide ${styles.badge}`}
+              >
+                {account?.accountType}
+              </span>
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-xs font-semibold text-slate-700">{name}</h3>
+          {/* Menu */}
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setOpenMenuModal((prev) => !prev)}
+              className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              aria-label="Account options"
+            >
+              <EllipsisVertical size={15} />
+            </button>
 
-            <p className="text-[9px] text-slate-400">{type}</p>
+            {openMenuModal && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenuModal(false)}
+                />
+                <div className="absolute right-0 top-8 z-50 w-28 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                  <button
+                    type="button"
+                    className="w-full px-3 py-2 text-left text-[11px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-teal-700"
+                    onClick={() => {
+                      onEdit();
+                      setOpenMenuModal(false);
+                    }}
+                  >
+                    ✏️ Edit
+                  </button>
+
+                  <div className="mx-3 border-t border-slate-100" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      deleteAccount(account);
+                      setOpenMenuModal(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-[11px] font-medium text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        <button className="text-slate-400">⋮</button>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div>
-          <p className="text-[8px] uppercase text-slate-400">{balanceLabel}</p>
-
-          <p className="mt-1 text-lg font-semibold text-slate-800">{balance}</p>
+        {/* Balance section */}
+        <div className="rounded-lg bg-slate-50 px-3 py-2.5">
+          <p className="text-[9px] font-medium uppercase tracking-widest text-slate-400">
+            {balanceLabel}
+          </p>
+          <p className="mt-1 text-xl font-bold text-slate-800">
+            {formatCurrency(account?.currentBalance)}
+          </p>
         </div>
 
-        {badge && (
-          <span className="rounded bg-teal-50 px-1.5 py-0.5 text-[8px] font-medium text-teal-600">
-            {badge}
-          </span>
+        {/* Account number hint */}
+        {account?.accountNo && (
+          <p className="text-[9px] text-slate-400">
+            ···· {String(account.accountNo).slice(-4)}
+          </p>
         )}
-      </div>
-
-      <div className="mt-4 flex justify-between border-t border-slate-100 pt-3">
-        <button className="text-[8px] text-teal-700">{syncLabel}</button>
-
-        <button className="text-[8px] text-slate-400">{actionLabel}</button>
       </div>
     </div>
   );

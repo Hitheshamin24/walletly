@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   X,
   Landmark,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useAccountHook } from "../../hooks/useAccountsHook";
 
-const AccountForm = ({ onClose }) => {
+const AccountForm = ({ onClose, accountToEdit }) => {
   const {
     register,
     setValue,
@@ -17,9 +17,37 @@ const AccountForm = ({ onClose }) => {
     handleAccounts,
     handleSubmit,
     handleError,
+    reset,
   } = useAccountHook();
 
   const selectedType = watch("accountType");
+
+  useEffect(() => {
+    if (accountToEdit) {
+      reset({
+        accountType: accountToEdit.accountType,
+        accountName: accountToEdit.accountName,
+        bank: accountToEdit.bank,
+        accountNo: accountToEdit.accountNo,
+        initialBalance:
+          accountToEdit.initialBalance || accountToEdit.currentBalance,
+        color: accountToEdit.color,
+      });
+    } else {
+      reset({
+        accountType: "bank",
+        accountName: "",
+        bank: "",
+        accountNo: "",
+        initialBalance: "",
+        color: "#3B82F6",
+      });
+    }
+  }, [accountToEdit, reset]);
+  const onSubmit = (data) => {
+    handleAccounts(data, accountToEdit, onClose);
+  };
+
   return (
     <div
       onClick={onClose}
@@ -38,7 +66,7 @@ const AccountForm = ({ onClose }) => {
               className="h-4 w-4 object-contain"
             />
             <h2 className="text-xs font-semibold text-slate-800">
-              Add New Account
+              {accountToEdit ? "Edit Account" : "Add New Account"}
             </h2>
           </div>
 
@@ -53,7 +81,7 @@ const AccountForm = ({ onClose }) => {
 
         {/* Form Content */}
         <form
-          onSubmit={handleSubmit(handleAccounts, handleError)}
+          onSubmit={handleSubmit(onSubmit, handleError)}
           id="account-form"
           className="px-4 py-3"
         >
@@ -119,9 +147,7 @@ const AccountForm = ({ onClose }) => {
             </label>
             <input
               {...register("accountName", {
-                required: {
-                  message: "Account Name is required",
-                },
+                required: "Account Name is required",
               })}
               type="text"
               placeholder="e.g. Chase Main Checking"
@@ -130,44 +156,29 @@ const AccountForm = ({ onClose }) => {
           </div>
 
           {/* Institution & Last 4 Digits */}
-          <div className="mb-3 grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1 block text-[10px] font-medium text-slate-700">
-                Bank / Institution
-              </label>
-              <input
-                {...register("bank", {
-                  required: {
-                    message: "bank Name is required",
-                  },
-                })}
-                type="text"
-                placeholder="e.g. SBI Bank"
-                className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-[10px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
-              />
-            </div>
+          {selectedType !== "wallet" && (
+            <div className="mb-3 grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-[10px] font-medium text-slate-700">
+                  Last 4 Digits
+                </label>
+                <input
+                  {...register("accountNo", {
+                    required: "Account No is required",
 
-            <div>
-              <label className="mb-1 block text-[10px] font-medium text-slate-700">
-                Last 4 Digits
-              </label>
-              <input
-                {...register("accountNo", {
-                  required: {
-                    message: "Account No is required",
-                  },
-                  pattern: {
-                    value: /^\d{4}$/,
-                    message: "Account number must be exactly 4 digits",
-                  },
-                })}
-                type="text"
-                maxLength={4}
-                placeholder="4920"
-                className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-[10px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
-              />
+                    pattern: {
+                      value: /^\d{4}$/,
+                      message: "Account number must be exactly 4 digits",
+                    },
+                  })}
+                  type="text"
+                  maxLength={4}
+                  placeholder="4920"
+                  className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-[10px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Starting Balance */}
           <div className="mb-3">
@@ -180,9 +191,7 @@ const AccountForm = ({ onClose }) => {
               </span>
               <input
                 {...register("initialBalance", {
-                  required: {
-                    message: "Initial balance is required",
-                  },
+                  required: "Initial balance is required",
                 })}
                 type="number"
                 placeholder="0.00"
@@ -199,9 +208,7 @@ const AccountForm = ({ onClose }) => {
               </label>
               <select
                 {...register("color", {
-                  required: {
-                    message: "select color ",
-                  },
+                  required: "select color ",
                 })}
                 className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-[10px] text-slate-600 outline-none transition focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
               >

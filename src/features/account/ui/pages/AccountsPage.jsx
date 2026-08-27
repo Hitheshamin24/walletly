@@ -1,58 +1,24 @@
-import React, { useState } from "react";
-import { Landmark, CreditCard, TrendingUp } from "lucide-react";
+import { Landmark, CreditCard, TrendingUp, PiggyBank } from "lucide-react";
 import PageHeader from "../component/PageHeader";
 import NetWorthCard from "../component/NetWorthCard";
 import DistributionCard from "../component/DistributionCard";
 import AccountCard from "../component/AccountCard";
 import AddAccountCard from "../component/AddAccountCard";
 import AccountForm from "../component/AccountForm";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
-const accounts = [
-  {
-    icon: Landmark,
-    iconBg: "bg-blue-50",
-    name: "Chase Bank",
-    type: "Checking •••• 4920",
-    balance: "$12,450.00",
-    syncLabel: "↻ Synced 2m ago",
-    actionLabel: "View Activity",
-  },
-  {
-    icon: Landmark,
-    iconBg: "bg-blue-50",
-    name: "Ally Bank",
-    type: "High-Yield Savings",
-    balance: "$45,000.00",
-    syncLabel: "↻ Synced 2m ago",
-    actionLabel: "View Activity",
-  },
-  {
-    icon: CreditCard,
-    iconBg: "bg-red-50",
-    name: "Amex Platinum",
-    type: "Credit Card •••• 1004",
-    balance: "-$3,450.00",
-    balanceLabel: "Current Balance",
-    badge: "LIMIT: $10K",
-    syncLabel: "↻ Synced 2m ago",
-    actionLabel: "View Activity",
-  },
-  {
-    icon: TrendingUp,
-    iconBg: "bg-indigo-50",
-    name: "Fidelity",
-    type: "Brokerage •••• 8821",
-    balance: "$98,750.00",
-    balanceLabel: "Portfolio Value",
-    badge: "+13%",
-    syncLabel: "↻ Market Open",
-    actionLabel: "View Holdings",
-  },
-];
+const ACCOUNT_TYPE_ICONS = {
+  bank: Landmark,
+  wallet: PiggyBank,
+  credit: CreditCard,
+};
 
 const AccountsPage = () => {
-  const [addAccountModal, setAddAccountModal] = useState(false);
+  const accounts = useSelector((state) => state.accounts.accounts);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState(null);
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <PageHeader />
@@ -75,15 +41,33 @@ const AccountsPage = () => {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {accounts.map((account) => (
-            <AccountCard key={account.name} {...account} />
+            <AccountCard
+              key={account.id || account.accountNo}
+              account={account}
+              icon={ACCOUNT_TYPE_ICONS[account.accountType] ?? TrendingUp}
+              onEdit={() => {
+                setSelectedAccount(account);
+                setIsModalOpen(true);
+              }}
+            />
           ))}
-          <div onClick={() => setAddAccountModal(true)}>
+          <div
+            onClick={() => {
+              setSelectedAccount(null);
+              setIsModalOpen(true);
+            }}
+          >
             <AddAccountCard />
           </div>
         </div>
       </div>
-      {addAccountModal && (
-        <AccountForm onClose={() => setAddAccountModal(false)} />
+      {isModalOpen && (
+        <AccountForm accountToEdit={selectedAccount}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedAccount(null)
+          }}
+        />
       )}
     </div>
   );
