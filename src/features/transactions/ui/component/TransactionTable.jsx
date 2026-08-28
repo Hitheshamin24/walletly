@@ -6,7 +6,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { getCategoryStyle, getAmountStyle } from "../../constants/categoryConstants";
+import {
+  getCategoryStyle,
+  getAmountStyle,
+} from "../../constants/categoryConstants";
+import { useTransactionHook } from "../../hooks/useTransactionHooks";
 
 const TABLE_HEADERS = [
   { label: "Date", align: "left" },
@@ -24,7 +28,7 @@ const TransactionTable = ({
   setShowTransactionModal,
 }) => {
   const [openMenuIndex, setOpenMenuIndex] = useState(false);
-
+  const { deleteTransaction } = useTransactionHook();
   return (
     <div className="overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
       {/* Desktop Table */}
@@ -61,10 +65,16 @@ const TransactionTable = ({
 
                 <td className="px-4 py-3.5">
                   {(() => {
-                    const cat = getCategoryStyle(transaction.transactionCategory);
+                    const cat = getCategoryStyle(
+                      transaction.transactionCategory,
+                    );
                     return (
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[8px] font-semibold capitalize ${cat.badge}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${cat.dot}`} />
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[8px] font-semibold capitalize ${cat.badge}`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full shrink-0 ${cat.dot}`}
+                        />
                         {transaction.transactionCategory}
                       </span>
                     );
@@ -87,7 +97,12 @@ const TransactionTable = ({
                       transaction.transactionType,
                     )}`}
                   >
-                    {transaction.transactionType === "income" ? "+" : transaction.transactionType === "expense" ? "-" : ""}{transaction.amount}
+                    {transaction.transactionType === "income"
+                      ? "+"
+                      : transaction.transactionType === "expense"
+                        ? "-"
+                        : ""}
+                    {transaction.amount}
                   </span>
                 </td>
 
@@ -122,9 +137,10 @@ const TransactionTable = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => 
-                            
-                            setOpenMenuIndex(false)}
+                          onClick={() => {
+                            deleteTransaction(transaction);
+                            setOpenMenuIndex(false);
+                          }}
                           className="flex w-full items-center gap-1.5 px-2.5 py-1 text-[9px] font-medium text-red-500 hover:bg-red-50 cursor-pointer"
                         >
                           <Trash2 size={11} className="text-red-500" />

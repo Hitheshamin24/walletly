@@ -37,7 +37,7 @@ export const getCategoryStyle = (category) => {
   const key = category.toLowerCase().replace(/\s*&\s*/g, " ").trim();
   return (
     CATEGORY_STYLES[key] ??
-    CATEGORY_STYLES[key.split(" ")[0]] ?? // try first word e.g. "freelance income" → "freelance"
+    CATEGORY_STYLES[key.split(" ")[0]] ?? 
     { badge: "bg-slate-50 text-slate-600 border border-slate-200", dot: "bg-slate-400" }
   );
 };

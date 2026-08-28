@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { addTransaction, updateTransaction } from "../state/transactionSlice";
+import { addTransaction, removeTransaction, updateTransaction } from "../state/transactionSlice";
 import { toast } from "react-toastify";
 
 export const useTransactionHook = () => {
@@ -39,6 +39,10 @@ export const useTransactionHook = () => {
     onClose();
   };
 
+  const deleteTransaction = (data) => {
+    dispatch(removeTransaction(data.id));
+    toast.success("Transaction deleted  Successfully");
+  };
   const handleErrors = (error) => {
     console.log(error);
   };
@@ -50,7 +54,9 @@ export const useTransactionHook = () => {
     watch,
     errors,
     handleTransaction,
+    deleteTransaction,
     handleErrors,
     transactions,
+
   };
 };
