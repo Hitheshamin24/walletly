@@ -1,21 +1,26 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from "react";
-import TransactionForm from "../ui/components/TransactionForm";
 
 const TransactionContext = createContext();
 
 export const TransactionProvider = ({ children }) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null)
   return (
     <TransactionContext.Provider
-      value={{ showTransactionModal, setShowTransactionModal }}
+      value={{ showTransactionModal, setShowTransactionModal ,editingTransaction,setEditingTransaction}}
     >
       {children}
-      {showTransactionModal && <TransactionForm />}
     </TransactionContext.Provider>
   );
 };
 
 export const useTransactionContext = () => {
-  return useContext(TransactionContext);
+  const context = useContext(TransactionContext);
+  if (!context) {
+    throw new Error(
+      "useTransactionContext must be used within a TransactionProvider"
+    );
+  }
+  return context;
 };

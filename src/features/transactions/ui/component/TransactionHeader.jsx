@@ -1,6 +1,6 @@
 import { Plus, Upload } from "lucide-react";
 
-const TransactionHeader = () => {
+const TransactionHeader = ({ setShowTransactionModal }) => {
   return (
     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 className="text-xl font-bold tracking-tight text-slate-900">
@@ -18,7 +18,8 @@ const TransactionHeader = () => {
 
         <button
           type="button"
-          className="flex h-8 items-center gap-1.5 rounded-md bg-teal-700 px-3 text-[10px] font-semibold text-white shadow-sm transition hover:bg-teal-800"
+          onClick={() => setShowTransactionModal(true)}
+          className="flex h-8 items-center gap-1.5 rounded-md bg-teal-700 px-3 text-[10px] font-semibold text-white shadow-sm transition hover:bg-teal-800 cursor-pointer"
         >
           <Plus size={12} />
           Add Transaction

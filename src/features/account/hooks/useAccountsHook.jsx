@@ -107,5 +107,6 @@ export const useAccountHook = () => {
     errors,
     reset,
     calculateTotal,
+    accounts
   };
 };
