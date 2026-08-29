@@ -2,11 +2,11 @@ import React from "react";
 import Navbar from "../../shared/ui/components/Navbar";
 import { Outlet } from "react-router";
 import TransactionForm from "../../shared/ui/components/TransactionForm";
-import { useTransactionContext } from "../../shared/context/TransactionFormContext";
+import { useTransactionContext, TransactionProvider } from "../../shared/context/TransactionFormContext";
 
-const MainLayout = () => {
+// Inner layout — consumes TransactionContext
+const MainLayoutContent = () => {
   const { showTransactionModal } = useTransactionContext();
-
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
@@ -18,4 +18,11 @@ const MainLayout = () => {
   );
 };
 
+const MainLayout = () => (
+  <TransactionProvider>
+    <MainLayoutContent />
+  </TransactionProvider>
+);
+
 export default MainLayout;
+

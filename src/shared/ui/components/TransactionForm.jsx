@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { X, Check } from "lucide-react";
 import { useTransactionContext } from "../../context/TransactionFormContext";
-import { useTransactionHook } from "../../../features/transactions/hooks/useTransactionHooks";
+import { useTransactionForm } from "../../../features/transactions/hooks/useTransactionHooks";
 import { useAccountHook } from "../../../features/account/hooks/useAccountsHook";
 const TransactionForm = () => {
   const { setShowTransactionModal, editingTransaction, setEditingTransaction } =
@@ -16,21 +16,21 @@ const TransactionForm = () => {
     setValue,
     watch,
     reset,
-  } = useTransactionHook();
+  } = useTransactionForm();
   const selectedType = watch("transactionType");
   const selectedAccount = watch("transactionAccount");
 
-  const account = accounts?.find((val) => val.accountNo === selectedAccount);
+  const account = accounts?.find((val) => val.id === selectedAccount);
   const handleTypeChange = (type) => {
     setValue("transactionType", type);
     setValue("transactionCategory", "");
   };
-const onClose = () => {
+  const onClose = () => {
     setShowTransactionModal(false);
     setEditingTransaction(null);
   };
   const onSubmit = (data) => {
-    handleTransaction(data, editingTransaction,onClose);
+    handleTransaction(data, editingTransaction, onClose);
   };
 
   useEffect(() => {
@@ -48,7 +48,6 @@ const onClose = () => {
     }
   }, [editingTransaction, reset]);
 
-  
   return (
     <div
       onClick={onClose}
@@ -271,7 +270,7 @@ const onClose = () => {
                 className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-[10px] text-slate-600 outline-none transition hover:border-slate-300 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/10"
               >
                 {accounts?.map((val) => (
-                  <option key={val.id} value={val.accountName}>
+                  <option key={val.id} value={val.id}>
                     {val.accountName}
                   </option>
                 ))}

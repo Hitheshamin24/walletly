@@ -10,7 +10,7 @@ import {
   getCategoryStyle,
   getAmountStyle,
 } from "../../constants/categoryConstants";
-import { useTransactionHook } from "../../hooks/useTransactionHooks";
+import { useTransactionData } from "../../hooks/useTransactionHooks";
 
 const TABLE_HEADERS = [
   { label: "Date", align: "left" },
@@ -22,13 +22,26 @@ const TABLE_HEADERS = [
   { label: "Actions", align: "center", width: "w-12" },
 ];
 
+const ITEMS_PER_PAGE = 10;
+
 const TransactionTable = ({
   transactions = [],
   setEditingTransaction,
   setShowTransactionModal,
 }) => {
-  const [openMenuIndex, setOpenMenuIndex] = useState(false);
-  const { deleteTransaction } = useTransactionHook();
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { deleteTransaction } = useTransactionData();
+
+  const totalPages = Math.max(1, Math.ceil(transactions.length / ITEMS_PER_PAGE));
+  const paginatedTransactions = transactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  const startItem = transactions.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, transactions.length);
+
   return (
     <div className="overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
       {/* Desktop Table */}
@@ -48,7 +61,7 @@ const TransactionTable = ({
           </thead>
 
           <tbody>
-            {transactions.map((transaction, index) => (
+            {paginatedTransactions.map((transaction, index) => (
               <tr
                 key={`${transaction.transactionDate}-${transaction.transactionNote}-${index}`}
                 className="group border-t border-slate-100/80 transition-colors duration-100 hover:bg-slate-50/60"
@@ -109,18 +122,18 @@ const TransactionTable = ({
                 <td className="relative px-4 py-3.5 text-center">
                   <button
                     type="button"
-                    onClick={() => setOpenMenuIndex(!openMenuIndex)}
+                    onClick={() => setOpenMenuIndex(openMenuIndex===index?null :index)}
                     className="rounded-md border border-transparent p-1 text-slate-400 transition hover:border-slate-200 hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
                   >
                     <MoreHorizontal size={13} />
                   </button>
 
                   {/* Actions Dropdown */}
-                  {openMenuIndex && (
+                  {openMenuIndex === index && (
                     <>
                       <div
                         className="fixed inset-0 z-10"
-                        onClick={() => setOpenMenuIndex(false)}
+                        onClick={() => setOpenMenuIndex(null)}
                       />
                       <div className="absolute right-3 top-8 z-20 w-24 rounded-lg border border-slate-200 bg-white py-1 shadow-md">
                         <button
@@ -128,7 +141,7 @@ const TransactionTable = ({
                           onClick={() => {
                             setEditingTransaction(transaction);
                             setShowTransactionModal(true);
-                            setOpenMenuIndex(false);
+                            setOpenMenuIndex(null);
                           }}
                           className="flex w-full items-center gap-1.5 px-2.5 py-1 text-[9px] font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
                         >
@@ -139,7 +152,7 @@ const TransactionTable = ({
                           type="button"
                           onClick={() => {
                             deleteTransaction(transaction);
-                            setOpenMenuIndex(false);
+                            setOpenMenuIndex(null);
                           }}
                           className="flex w-full items-center gap-1.5 px-2.5 py-1 text-[9px] font-medium text-red-500 hover:bg-red-50 cursor-pointer"
                         >
@@ -158,7 +171,7 @@ const TransactionTable = ({
 
       {/* Mobile Cards */}
       <div className="divide-y divide-slate-100 md:hidden">
-        {transactions.map((transaction, index) => (
+        {paginatedTransactions.map((transaction, index) => (
           <div
             key={`${transaction.transactionDate}-${transaction.transactionNote}-${index}`}
             className="p-4"
@@ -185,13 +198,15 @@ const TransactionTable = ({
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setOpenMenuIndex(!openMenuIndex)}
+                    onClick={() =>
+                      setOpenMenuIndex(openMenuIndex === index ? null : index)
+                    }
                     className="rounded p-1 text-slate-400 hover:bg-slate-100"
                   >
                     <MoreHorizontal size={13} />
                   </button>
 
-                  {openMenuIndex && (
+                  {openMenuIndex === index && (
                     <>
                       <div
                         className="fixed inset-0 z-10"
@@ -200,7 +215,11 @@ const TransactionTable = ({
                       <div className="absolute right-0 top-7 z-20 w-24 rounded-lg border border-slate-200 bg-white py-1 shadow-md">
                         <button
                           type="button"
-                          onClick={() => setOpenMenuIndex(null)}
+                          onClick={() => {
+                            setEditingTransaction(transaction);
+                            setShowTransactionModal(true);
+                            setOpenMenuIndex(null);
+                          }}
                           className="flex w-full items-center gap-1.5 px-2.5 py-1 text-[9px] font-medium text-slate-700 hover:bg-slate-50"
                         >
                           <Pencil size={11} className="text-teal-600" />
@@ -208,7 +227,10 @@ const TransactionTable = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => setOpenMenuIndex(null)}
+                          onClick={() => {
+                            deleteTransaction(transaction);
+                            setOpenMenuIndex(null);
+                          }}
                           className="flex w-full items-center gap-1.5 px-2.5 py-1 text-[9px] font-medium text-red-500 hover:bg-red-50"
                         >
                           <Trash2 size={11} className="text-red-500" />
@@ -241,58 +263,84 @@ const TransactionTable = ({
       </div>
 
       {/* Pagination Footer */}
-      <TransactionPagination />
+      <TransactionPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        startItem={startItem}
+        endItem={endItem}
+        total={transactions.length}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
 
 /* ── Pagination ─────────────────────────────────────────────── */
-const TransactionPagination = () => (
-  <div className="flex flex-col gap-3 border-t border-slate-100 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-    <p className="text-[8px] text-slate-400">
-      Showing <span className="font-medium text-slate-600">1 to 5</span> of 124
-      results
-    </p>
+const TransactionPagination = ({ currentPage, totalPages, startItem, endItem, total, onPageChange }) => {
+  // Show max 3 page buttons centred around currentPage
+  const getPageNumbers = () => {
+    const pages = [];
+    const start = Math.max(1, currentPage - 1);
+    const end = Math.min(totalPages, start + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  };
 
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50"
-      >
-        <ChevronLeft size={11} />
-      </button>
+  return (
+    <div className="flex flex-col gap-3 border-t border-slate-100 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-[8px] text-slate-400">
+        {total === 0 ? (
+          "No transactions"
+        ) : (
+          <>
+            Showing{" "}
+            <span className="font-medium text-slate-600">
+              {startItem} to {endItem}
+            </span>{" "}
+            of {total} results
+          </>
+        )}
+      </p>
 
-      {[1, 2, 3].map((page) => (
+      <div className="flex items-center gap-1">
+        {/* Previous */}
         <button
-          key={page}
           type="button"
-          className={`flex h-6 w-6 items-center justify-center rounded text-[8px] font-semibold ${
-            page === 1
-              ? "bg-teal-700 text-white"
-              : "text-slate-500 hover:bg-slate-50"
-          }`}
+          disabled={currentPage === 1}
+          onClick={() => onPageChange((p) => Math.max(1, p - 1))}
+          className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {page}
+          <ChevronLeft size={11} />
         </button>
-      ))}
 
-      <span className="px-1 text-[8px] text-slate-400">...</span>
+        {/* Page numbers */}
+        {getPageNumbers().map((page) => (
+          <button
+            key={page}
+            type="button"
+            onClick={() => onPageChange(page)}
+            className={`flex h-6 w-6 items-center justify-center rounded text-[8px] font-semibold ${
+              page === currentPage
+                ? "bg-teal-700 text-white"
+                : "text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
 
-      <button
-        type="button"
-        className="flex h-6 w-6 items-center justify-center rounded text-[8px] text-slate-500 hover:bg-slate-50"
-      >
-        25
-      </button>
-
-      <button
-        type="button"
-        className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50"
-      >
-        <ChevronRight size={11} />
-      </button>
+        {/* Next */}
+        <button
+          type="button"
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
+          className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronRight size={11} />
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default TransactionTable;

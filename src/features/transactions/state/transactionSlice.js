@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const getInitialUser = () => {
-  const { id } = JSON.parse(localStorage.getItem("walletlyCurrentUser"));
-  return id;
+  try {
+    const stored = localStorage.getItem("walletlyCurrentUser");
+    return stored ? JSON.parse(stored)?.id : null;
+  } catch {
+    return null;
+  }
 };
 const getCurrentTime = () => {
   const now = new Date();
@@ -13,20 +17,20 @@ const getCurrentTime = () => {
 };
 
 const getCurrentTransaction = () => {
-  return (
-    JSON.parse(
-      localStorage.getItem(`walletly-Transactions-${getInitialUser()}`),
-    ) || []
-  );
+  try {
+    const stored = localStorage.getItem(`walletly-Transactions-${getInitialUser()}`);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 };
 const getCurrentLastUpdated = () => {
-  return (
-    JSON.parse(
-      localStorage.getItem(
-        `walletly-lastUpdate-Transactions-${getInitialUser()}`,
-      ),
-    ) || []
-  );
+  try {
+    const stored = localStorage.getItem(`walletly-lastUpdate-Transactions-${getInitialUser()}`);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 };
 const initialState = {
   transactions: getCurrentTransaction(),
@@ -80,10 +84,24 @@ const transactionSlice = createSlice({
         );
       }
     },
+    removeTransactionAccount: (state, action) => {
+      state.transactions = state.transactions.filter(
+        (transaction) => transaction.accountId !== action.payload,
+      );
+      state.lastUpdated = getCurrentTime();
+      localStorage.setItem(
+        `walletly-Transactions-${getInitialUser()}`,
+        JSON.stringify(state.transactions),
+      );
+      localStorage.setItem(
+        `walletly-lastUpdate-Transactions-${getInitialUser()}`,
+        JSON.stringify(state.lastUpdated),
+      );
+    },
   },
 });
 
-export const { addTransaction, removeTransaction, updateTransaction } =
+export const { addTransaction, removeTransaction, updateTransaction ,removeTransactionAccount} =
   transactionSlice.actions;
 
 export default transactionSlice.reducer;

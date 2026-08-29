@@ -6,6 +6,7 @@ import {
   removeAccount,
   updateAccount,
 } from "../state/accountSlice";
+import { removeTransactionAccount } from "../../transactions/state/transactionSlice";
 
 export const useAccountHook = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export const useAccountHook = () => {
           ...accountToEdit,
           ...data,
           initialBalance,
-          currentBalance: initialBalance,
+          currentBalance: accountToEdit.currentBalance + (initialBalance - accountToEdit.initialBalance),
         }),
       );
       toast.success("Account updated successfully");
@@ -60,6 +61,7 @@ export const useAccountHook = () => {
   };
   const deleteAccount = (data) => {
     dispatch(removeAccount(data.id));
+    dispatch(removeTransactionAccount(data.id))
     toast.success("Account removed successfully");
   };
   const handleError = (error) => {

@@ -1,14 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const getInitialUser = () => {
-  const { id } = JSON.parse(localStorage.getItem("walletlyCurrentUser"));
-  return id;
+  try {
+    const stored = localStorage.getItem("walletlyCurrentUser");
+    return stored ? JSON.parse(stored)?.id : null;
+  } catch {
+    return null;
+  }
 };
 const getCurrentAccounts = () => {
-  return (
-    JSON.parse(localStorage.getItem(`walletly-accounts-${getInitialUser()}`)) ||
-    []
-  );
+  try {
+    const stored = localStorage.getItem(`walletly-accounts-${getInitialUser()}`);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 };
 const initialState = {
   accounts: getCurrentAccounts(),

@@ -3,56 +3,62 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { addUser, removeUser } from "../state/authSlice";
-import { useState } from "react";
+
+// Single source of truth — always read users fresh from localStorage
+const getUsers = () => {
+  try {
+    return JSON.parse(localStorage.getItem("walletly-users")) || [];
+  } catch {
+    return [];
+  }
+};
+
 export const useAuthHook = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const [walletlyUsers, setWalletlyUsers] = useState(
-    () => JSON.parse(localStorage.getItem("walletly-users")) || [],
-  );
   const { register, handleSubmit, reset } = useForm();
+
   const registerUser = (data) => {
     const userData = { ...data, fullname: data.fullname.trim() };
-    const fullname = userData.fullname;
-    const email = userData.email;
-    const existsName = walletlyUsers.some(
+    const { fullname, email } = userData;
+    const users = getUsers();
+
+    const existsName = users.some(
       (user) => user.fullname.toLowerCase() === fullname.toLowerCase(),
     );
-    const existEmail = walletlyUsers.some(
+    const existEmail = users.some(
       (user) => user.email.toLowerCase() === email.toLowerCase(),
     );
-    if (existsName) {
-      toast.error("User name already taken");
-      return;
-    }
-    if (existEmail) {
-      toast.error("Email already taken ");
-      return;
-    }
+
+    if (existsName) return toast.error("User name already taken");
+    if (existEmail) return toast.error("Email already taken");
+
     const newUser = { id: Date.now(), ...userData };
-    const updatedUsers = [...walletlyUsers, newUser];
-    setWalletlyUsers(updatedUsers);
+    const updatedUsers = [...users, newUser];
+
     // eslint-disable-next-line no-unused-vars
     const { password, ...safeUser } = newUser;
     dispatch(addUser(safeUser));
     localStorage.setItem("walletly-users", JSON.stringify(updatedUsers));
     localStorage.setItem("walletlyCurrentUser", JSON.stringify(newUser));
-    toast.success("register successful");
+    toast.success("Register successful");
     reset();
     navigate("/main");
   };
 
-  // login authentication
   const loginUser = (data) => {
     const email = data.email.toLowerCase();
-    const loggedInUser = walletlyUsers.find(
+    const users = getUsers();
+    const loggedInUser = users.find(
       (user) =>
         user.email.toLowerCase() === email &&
         user.password === data.password,
     );
+
     if (!loggedInUser) return toast.error("Invalid email or password");
+
     // eslint-disable-next-line no-unused-vars
     const { password, ...safeUser } = loggedInUser;
     dispatch(addUser(safeUser));
@@ -66,9 +72,10 @@ export const useAuthHook = () => {
     dispatch(removeUser());
     navigate("/login");
   };
+
   const formError = (error) => {
     if (Object.keys(error).length > 1) {
-      toast.warn("All fields are required ");
+      toast.warn("All fields are required");
       return;
     }
     const firstError = Object.values(error)[0];
@@ -89,3 +96,4 @@ export const useAuthHook = () => {
     isAuthenticated,
   };
 };
+
