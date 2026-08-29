@@ -1,5 +1,12 @@
 import { Search } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setAccount,
+  setCategory,
+  setDate,
+  setSearch,
+  setType,
+} from "../../state/filterSlice";
 
 const TYPE_FILTERS = ["All", "Income", "Expense", "Transfer"];
 
@@ -34,14 +41,19 @@ const selectClass =
 const TransactionFilters = () => {
   const accounts = useSelector((state) => state.accounts.accounts);
   const transactions = useSelector((state) => state.transactions.transactions);
-  
+  const dispatch = useDispatch();
+  const { type,account,date,category,search } = useSelector((state) => state.filter);
+
+  const index = TYPE_FILTERS.findIndex(
+    (ty) => ty.toLowerCase() === type.toLowerCase(),
+  );
+
+  const activeIndex = index === -1 ? 0 : index;
   const monthOptions = [
     { label: "All Time", value: "" },
     ...Array.from(
       new Set(
-        transactions
-          .map((t) => t.transactionDate?.slice(0, 7))
-          .filter(Boolean),
+        transactions.map((t) => t.transactionDate?.slice(0, 7)).filter(Boolean),
       ),
     )
       .sort((a, b) => b.localeCompare(a))
@@ -58,9 +70,11 @@ const TransactionFilters = () => {
   return (
     <div className="mb-4 rounded-lg border border-slate-200 bg-white p-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap items-center gap-2">
-
         {/* Month */}
-        <select className={selectClass}>
+        <select value={date}
+          onChange={(e) => dispatch(setDate(e.target.value))}
+          className={selectClass}
+        >
           {monthOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -69,7 +83,11 @@ const TransactionFilters = () => {
         </select>
 
         {/* Category */}
-        <select className={selectClass}>
+        <select
+          value={category}
+          onChange={(e) => dispatch(setCategory(e.target.value))}
+          className={selectClass}
+        >
           {CATEGORY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -78,7 +96,11 @@ const TransactionFilters = () => {
         </select>
 
         {/* Account */}
-        <select className={selectClass}>
+        <select
+          value={account}
+          onChange={(e) => dispatch(setAccount(e.target.value))}
+          className={selectClass}
+        >
           <option value="">All Accounts</option>
           {accounts.map((acc) => (
             <option key={acc.id} value={acc.id}>
@@ -95,6 +117,8 @@ const TransactionFilters = () => {
           />
           <input
             type="text"
+            value={search}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
             placeholder="Search..."
             className="h-7 w-full rounded-md border border-slate-200 bg-slate-50 pl-7 pr-2 text-[9px] text-slate-600 outline-none placeholder:text-slate-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20"
           />
@@ -106,9 +130,10 @@ const TransactionFilters = () => {
         {TYPE_FILTERS.map((item, index) => (
           <button
             key={item}
+            onClick={() => dispatch(setType(item==="All"?"":item))}
             type="button"
             className={`rounded px-2.5 py-1 text-[8px] font-medium transition ${
-              index === 0
+              activeIndex === index
                 ? "bg-teal-700 text-white"
                 : "text-slate-400 hover:bg-slate-100"
             }`}
