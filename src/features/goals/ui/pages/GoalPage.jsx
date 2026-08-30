@@ -1,98 +1,88 @@
-import { Wallet, TrendingUp, House, Utensils, Car, Plane } from "lucide-react";
+import { useState } from "react";
 import GoalHeader from "../components/GoalHeader";
 import CategorySection from "../components/CategorySection";
 import GoalsSection from "../components/GoalsSection";
-
-const incomeCategories = [
-  {
-    name: "Salary",
-    description: "Primary Income",
-    amount: "$5,200.00",
-    icon: Wallet,
-  },
-  {
-    name: "Investments",
-    description: "Dividends & Returns",
-    amount: "$450.00",
-    icon: TrendingUp,
-  },
-];
-
-const expenseCategories = [
-  {
-    name: "Housing",
-    description: "Limit: $2,000",
-    amount: "$1,850.00",
-    icon: House,
-    color: "text-red-500",
-    bg: "bg-red-50",
-    progress: "92%",
-    progressColor: "bg-red-500",
-  },
-  {
-    name: "Food & Dining",
-    description: "Limit: $600",
-    amount: "$640.00",
-    icon: Utensils,
-    color: "text-red-500",
-    bg: "bg-red-50",
-    progress: "100%",
-    progressColor: "bg-red-500",
-  },
-  {
-    name: "Transportation",
-    description: "Limit: $400",
-    amount: "$320.00",
-    icon: Car,
-    color: "text-red-500",
-    bg: "bg-red-50",
-    progress: "80%",
-    progressColor: "bg-teal-500",
-  },
-];
-
-const goals = [
-  {
-    title: "Japan Trip 2025",
-    description: "Deadline: Oct 2025",
-    current: "$3,200",
-    target: "$5,000",
-    percentage: 64,
-    icon: Plane,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    contributions: [
-      ["Auto-transfer", "Aug 1", "+$200"],
-      ["Bonus allocation", "Jul 15", "+$500"],
-    ],
-  },
-  {
-    title: "House Down Payment",
-    description: "Deadline: Dec 2026",
-    current: "$15,500",
-    target: "$40,000",
-    percentage: 38,
-    icon: House,
-    iconBg: "bg-indigo-50",
-    iconColor: "text-indigo-600",
-    contributions: [
-      ["Auto-transfer", "Aug 1", "+$500"],
-      ["Tax Refund", "Apr 20", "+$2,100"],
-    ],
-  },
-];
+import GoalForm from "../components/GoalForm";
+import ContributeModal from "../components/ContributeModal";
+import { useGoalHook } from "../../hooks/useGoalHook";
+import { useDashboard } from "../../../../shared/hooks/useDashboard";
 
 const GoalPage = () => {
+  const { goals, completedCount, totalSaved, totalTarget, deleteGoal } = useGoalHook();
+  const { fmt } = useDashboard();
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
+  const [contributingGoal, setContributingGoal] = useState(null);
+
+  const openNew = () => { setEditingGoal(null); setIsFormOpen(true); };
+  const openEdit = (goal) => { setEditingGoal(goal); setIsFormOpen(true); };
+  const closeForm = () => { setIsFormOpen(false); setEditingGoal(null); };
+  const openContribute = (goal) => setContributingGoal(goal);
+  const closeContribute = () => setContributingGoal(null);
+
+  const overallPct = totalTarget > 0 ? Math.min(Math.round((totalSaved / totalTarget) * 100), 100) : 0;
+
   return (
-    <div className="min-h-screen bg-[#f7f8fc] px-4 py-4 text-slate-800 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-slate-800 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <GoalHeader />
-        <CategorySection
-          incomeCategories={incomeCategories}
-          expenseCategories={expenseCategories}
+        <GoalHeader onNewGoal={openNew} />
+
+        {/* Summary strip */}
+        <div className="mb-6 grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Total Goals</p>
+            <p className="mt-1 text-xl font-bold text-slate-800">{goals.length}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Total Saved</p>
+            <p className="mt-1 text-xl font-bold text-teal-600">{fmt(totalSaved)}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Completed</p>
+            <p className="mt-1 text-xl font-bold text-indigo-600">
+              {completedCount}/{goals.length}
+            </p>
+          </div>
+        </div>
+
+        {/* Overall progress */}
+        {goals.length > 0 && (
+          <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-700">Overall Progress</p>
+              <p className="text-[11px] text-slate-400">
+                {fmt(totalSaved)} of {fmt(totalTarget)}
+              </p>
+            </div>
+            <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-teal-500 transition-all duration-500"
+                style={{ width: `${overallPct}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-right text-[10px] text-slate-400">{overallPct}% of all goals</p>
+          </div>
+        )}
+
+        {/* Category breakdown from real transactions */}
+        <CategorySection fmt={fmt} />
+
+        {/* Goals list */}
+        <GoalsSection
+          goals={goals}
+          onEdit={openEdit}
+          onDelete={deleteGoal}
+          onContribute={openContribute}
+          onNew={openNew}
+          fmt={fmt}
         />
-        <GoalsSection goals={goals} />
       </div>
+
+      {isFormOpen && <GoalForm goalToEdit={editingGoal} onClose={closeForm} />}
+      {contributingGoal && (
+        <ContributeModal goal={contributingGoal} onClose={closeContribute} fmt={fmt} />
+      )}
     </div>
   );
 };

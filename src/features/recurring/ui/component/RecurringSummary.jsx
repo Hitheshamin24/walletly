@@ -1,48 +1,62 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, TrendingDown, Bell } from "lucide-react";
 
-const BUDGET_PERCENT = 63;
+const RecurringSummary = ({ summary, fmt }) => {
+  const { totalMonthly, activeCount, dueSoon } = summary;
 
-const RecurringSummary = () => {
+  const now = new Date();
+  const monthName = now.toLocaleString("en-US", { month: "long" });
+
   return (
-    <div className="rounded-lg bg-transparent">
-      <div className="mb-1 flex items-center gap-2">
-        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-teal-50 text-teal-600">
-          <CalendarDays size={13} />
+    <div className="space-y-4">
+      {/* Monthly total card */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+        <div className="mb-2 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-50 text-teal-600">
+            <CalendarDays size={14} />
+          </div>
+          <div>
+            <p className="text-[9px] font-semibold text-slate-600">Upcoming this</p>
+            <p className="text-[9px] font-semibold text-slate-600">Month</p>
+          </div>
         </div>
 
-        <div>
-          <p className="text-[9px] font-semibold text-slate-600">
-            Upcoming this
-          </p>
-          <p className="text-[9px] font-semibold text-slate-600">Month</p>
-        </div>
+        <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+          {fmt(totalMonthly)}
+        </h2>
+        <p className="mt-0.5 text-[9px] text-slate-400">
+          {activeCount} active recurring in {monthName}
+        </p>
       </div>
 
-      <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-        $1,450.00
-      </h2>
-
-      <p className="mt-1 text-[8px] text-slate-400">
-        4 payments remaining in November
-      </p>
-
-      {/* Budget progress */}
-      <div className="mt-8">
-        <div className="mb-1 flex items-center justify-between">
-          <span className="text-[7px] font-medium text-slate-500">
-            Budget utilized
-          </span>
-          <span className="text-[7px] font-medium text-teal-600">
-            {BUDGET_PERCENT}%
-          </span>
+      {/* Due soon */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+        <div className="flex items-center gap-2">
+          <div className={`flex h-7 w-7 items-center justify-center rounded-md ${dueSoon > 0 ? "bg-amber-50 text-amber-600" : "bg-slate-50 text-slate-400"}`}>
+            <Bell size={13} />
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-slate-700">Due Soon</p>
+            <p className="text-[9px] text-slate-400">Within 7 days</p>
+          </div>
         </div>
+        <p className={`mt-2 text-2xl font-bold ${dueSoon > 0 ? "text-amber-600" : "text-slate-300"}`}>
+          {dueSoon}
+        </p>
+        <p className="text-[9px] text-slate-400">
+          {dueSoon === 0 ? "No upcoming payments" : `${dueSoon} payment${dueSoon > 1 ? "s" : ""} coming up`}
+        </p>
+      </div>
 
-        <div className="h-1 rounded-full bg-slate-200">
-          <div
-            className="h-1 rounded-full bg-teal-600"
-            style={{ width: `${BUDGET_PERCENT}%` }}
-          />
+      {/* Expense vs Income split */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-rose-50 text-rose-500">
+            <TrendingDown size={13} />
+          </div>
+          <p className="text-[10px] font-semibold text-slate-700">Monthly Expenses</p>
         </div>
+        <p className="text-xl font-bold text-rose-500">{fmt(summary.totalExpense)}</p>
+        <p className="mt-0.5 text-[9px] text-slate-400">from recurring expenses</p>
       </div>
     </div>
   );
