@@ -19,7 +19,7 @@ const SummaryCards = ({ cards }) => {
                 <p className="text-[6px] font-bold uppercase tracking-wide text-slate-400">
                   {card.title}
                 </p>
-                <p className="mt-0.5 text-[7px] text-slate-500">{card.name}</p>
+                <p className="mt-0.5 text-[7px] text-slate-500 truncate w-32">{card.name}</p>
                 <p className="mt-0.5 text-sm font-bold text-slate-800">
                   {card.amount}
                 </p>

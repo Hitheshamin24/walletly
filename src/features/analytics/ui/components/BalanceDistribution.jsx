@@ -1,4 +1,6 @@
-const BalanceDistribution = ({ balanceItems }) => {
+const BalanceDistribution = ({ distribution }) => {
+  const { totalBalance, balanceItems, gradientStr } = distribution;
+
   return (
     <div className="mt-3 rounded-md border border-slate-200 bg-white p-3 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       <div className="mb-3">
@@ -14,14 +16,13 @@ const BalanceDistribution = ({ balanceItems }) => {
         {/* Donut */}
         <div
           className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
-          style={{
-            background:
-              "conic-gradient(#0d9488 0deg 198deg, #6366f1 198deg 306deg, #f59e0b 306deg 360deg)",
-          }}
+          style={{ background: gradientStr }}
         >
           <div className="flex h-14 w-14 flex-col items-center justify-center rounded-full bg-white">
             <span className="text-[6px] text-slate-400">Total</span>
-            <span className="text-[11px] font-bold text-slate-800">$24k</span>
+            <span className="text-[10px] font-bold text-slate-800 truncate w-12 text-center">
+               {totalBalance > 1000000 ? (totalBalance/1000000).toFixed(1) + "M" : totalBalance >= 1000 ? (totalBalance/1000).toFixed(1) + "k" : totalBalance}
+            </span>
           </div>
         </div>
 
@@ -33,8 +34,8 @@ const BalanceDistribution = ({ balanceItems }) => {
               className="rounded-md border border-slate-100 bg-slate-50 p-2.5"
             >
               <div className="flex items-center gap-1.5">
-                <span className={`h-2 w-2 rounded-full ${item.color}`} />
-                <span className="text-[7px] font-medium text-slate-500">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                <span className="text-[7px] font-medium text-slate-500 truncate w-24">
                   {item.name}
                 </span>
               </div>
@@ -47,6 +48,9 @@ const BalanceDistribution = ({ balanceItems }) => {
               </p>
             </div>
           ))}
+          {balanceItems.length === 0 && (
+             <div className="text-[9px] text-slate-400 flex items-center justify-center col-span-3">No accounts added yet</div>
+          )}
         </div>
       </div>
     </div>
