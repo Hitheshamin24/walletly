@@ -6,11 +6,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import {
-  getCategoryStyle,
-  getAmountStyle,
-} from "../../constants/categoryConstants";
+import { getCategoryStyle, getAmountStyle } from "../../constants/categoryConstants";
 import { useTransactionData } from "../../hooks/useTransactionHooks";
+import { useDashboard } from "../../../../shared/hooks/useDashboard";
 
 const TABLE_HEADERS = [
   { label: "Date", align: "left" },
@@ -32,6 +30,7 @@ const TransactionTable = ({
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { deleteTransaction } = useTransactionData();
+  const { fmt } = useDashboard();
 
   const totalPages = Math.max(1, Math.ceil(transactions.length / ITEMS_PER_PAGE));
   const paginatedTransactions = transactions.slice(
@@ -115,7 +114,7 @@ const TransactionTable = ({
                       : transaction.transactionType === "expense"
                         ? "-"
                         : ""}
-                    {transaction.amount}
+                    {fmt(transaction.amount)}
                   </span>
                 </td>
 
@@ -192,7 +191,8 @@ const TransactionTable = ({
                     transaction.transactionType,
                   )}`}
                 >
-                  {transaction.amount}
+                  {transaction.transactionType === "income" ? "+" : transaction.transactionType === "expense" ? "-" : ""}
+                  {fmt(transaction.amount)}
                 </span>
 
                 <div className="relative">

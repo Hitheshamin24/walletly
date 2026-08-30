@@ -2,7 +2,6 @@ import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { useAccountHook } from "../../hooks/useAccountsHook";
 
-/* Per-account-type color tokens */
 const TYPE_STYLES = {
   bank: {
     gradient: "from-teal-500 to-emerald-400",
@@ -124,7 +123,7 @@ const AccountCard = ({
             {balanceLabel}
           </p>
           <p className="mt-1 text-xl font-bold text-slate-800">
-            {account.currency}{account?.currentBalance}
+            {account.currency}{(Number(account?.currentBalance) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
 
