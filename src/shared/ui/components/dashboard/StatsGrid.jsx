@@ -1,40 +1,43 @@
 import { Wallet, TrendingUp, TrendingDown, Target } from "lucide-react";
-
-const stats = [
-  {
-    title: "Total Balance",
-    value: "$24,500",
-    change: "+12.5%",
-    positive: true,
-    icon: Wallet,
-  },
-  {
-    title: "Income",
-    value: "$5,200",
-    change: "+8.2%",
-    positive: true,
-    icon: TrendingUp,
-  },
-  {
-    title: "Expenses",
-    value: "$3,100",
-    change: "-4.5%",
-    positive: true,
-    icon: TrendingDown,
-  },
-  {
-    title: "Savings",
-    value: "$2,100",
-    change: "+15.3%",
-    positive: true,
-    icon: Target,
-  },
-];
+import { useDashboard } from "../../../hooks/useDashboard";
 
 const StatsGrid = () => {
+  const { stats, fmt } = useDashboard();
+
+  const items = [
+    {
+      title: "Total Balance",
+      value: fmt(stats.totalBalance),
+      sub: "across all accounts",
+      positive: true,
+      icon: Wallet,
+    },
+    {
+      title: "Income",
+      value: fmt(stats.monthlyIncome),
+      sub: "this month",
+      positive: true,
+      icon: TrendingUp,
+    },
+    {
+      title: "Expenses",
+      value: fmt(stats.monthlyExpense),
+      sub: "this month",
+      positive: stats.monthlyExpense === 0,
+      icon: TrendingDown,
+    },
+    {
+      title: "Savings",
+      value: fmt(Math.max(0, stats.savings)),
+      sub: "income − expenses",
+      positive: stats.savings >= 0,
+      icon: Target,
+    },
+  ];
+
   return (
     <section className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
-      {stats.map((stat) => {
+      {items.map((stat) => {
         const Icon = stat.icon;
         return (
           <div
@@ -59,7 +62,7 @@ const StatsGrid = () => {
                   stat.positive ? "text-emerald-600" : "text-red-500"
                 }`}
               >
-                {stat.change}
+                {stat.sub}
               </span>
             </div>
           </div>

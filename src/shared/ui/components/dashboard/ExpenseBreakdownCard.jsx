@@ -1,10 +1,4 @@
-const expenseCategories = [
-  { name: "Housing", value: "35%", amount: "$1,085" },
-  { name: "Food", value: "25%", amount: "$775" },
-  { name: "Transport", value: "15%", amount: "$465" },
-  { name: "Bills", value: "10%", amount: "$310" },
-  { name: "Other", value: "15%", amount: "$465" },
-];
+import { useDashboard } from "../../../hooks/useDashboard";
 
 const DOT_COLORS = [
   "bg-indigo-600",
@@ -14,7 +8,30 @@ const DOT_COLORS = [
   "bg-slate-300",
 ];
 
+// Build a conic-gradient string from category percentages
+const buildGradient = (slices) => {
+  const colors = ["#4f46e5", "#14b8a6", "#f59e0b", "#f97316", "#cbd5e1"];
+  let deg = 0;
+  const parts = slices.map(([, amount], i) => {
+    const color = colors[i] ?? "#cbd5e1";
+    return { color, amount };
+  });
+  const total = parts.reduce((s, p) => s + p.amount, 0) || 1;
+  const segments = parts.map((p) => {
+    const start = deg;
+    const end = deg + (p.amount / total) * 360;
+    deg = end;
+    return `${p.color} ${start.toFixed(1)}deg ${end.toFixed(1)}deg`;
+  });
+  return `conic-gradient(${segments.join(", ")})`;
+};
+
 const ExpenseBreakdownCard = () => {
+  const { expenseBreakdown, fmt } = useDashboard();
+  const { categories, total } = expenseBreakdown;
+
+  const isEmpty = categories.length === 0;
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       <div className="mb-4">
@@ -24,39 +41,48 @@ const ExpenseBreakdownCard = () => {
         <p className="text-[10px] text-slate-400">This month</p>
       </div>
 
-      {/* Donut chart */}
-      <div className="flex justify-center py-2">
-        <div
-          className="relative h-36 w-36 rounded-full"
-          style={{
-            background:
-              "conic-gradient(#4f46e5 0deg 126deg, #14b8a6 126deg 216deg, #f59e0b 216deg 270deg, #f97316 270deg 306deg, #cbd5e1 306deg 360deg)",
-          }}
-        >
-          <div className="absolute inset-5.5 flex flex-col items-center justify-center rounded-full bg-white">
-            <span className="text-[9px] text-slate-400">Total</span>
-            <strong className="text-base font-bold text-slate-800">
-              $3,100
-            </strong>
-          </div>
+      {isEmpty ? (
+        <div className="flex flex-col items-center justify-center gap-2 py-6 text-slate-300">
+          <div className="h-24 w-24 rounded-full border-4 border-dashed border-slate-100" />
+          <p className="text-[11px] text-slate-400">No expenses this month</p>
         </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-3 space-y-2">
-        {expenseCategories.map((category, index) => (
-          <div
-            key={category.name}
-            className="flex items-center justify-between text-[10px]"
-          >
-            <span className="flex items-center gap-2 text-slate-500">
-              <span className={`h-2 w-2 rounded-full ${DOT_COLORS[index]}`} />
-              {category.name}
-            </span>
-            <span className="font-medium text-slate-600">{category.value}</span>
+      ) : (
+        <>
+          {/* Donut chart */}
+          <div className="flex justify-center py-2">
+            <div
+              className="relative h-36 w-36 rounded-full"
+              style={{ background: buildGradient(categories) }}
+            >
+              <div className="absolute inset-5 flex flex-col items-center justify-center rounded-full bg-white">
+                <span className="text-[9px] text-slate-400">Total</span>
+                <strong className="text-base font-bold text-slate-800">
+                  {fmt(total)}
+                </strong>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
+
+          {/* Legend */}
+          <div className="mt-3 space-y-2">
+            {categories.map(([name, amount], index) => {
+              const pct = total > 0 ? ((amount / total) * 100).toFixed(0) : 0;
+              return (
+                <div
+                  key={name}
+                  className="flex items-center justify-between text-[10px]"
+                >
+                  <span className="flex items-center gap-2 text-slate-500 capitalize">
+                    <span className={`h-2 w-2 rounded-full ${DOT_COLORS[index] ?? "bg-slate-300"}`} />
+                    {name}
+                  </span>
+                  <span className="font-medium text-slate-600">{pct}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -1,56 +1,26 @@
-import {
-  ShoppingCart,
-  Utensils,
-  Car,
-  Home,
-  CircleDollarSign,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useDashboard } from "../../../hooks/useDashboard";
+import { getCategoryStyle, getAmountStyle } from "../../../../features/transactions/constants/categoryConstants";
 
-const activities = [
-  {
-    icon: ShoppingCart,
-    title: "Whole Foods Market",
-    category: "Groceries",
-    date: "Today, 10:42 AM",
-    amount: "-$82.50",
-    type: "expense",
-  },
-  {
-    icon: Utensils,
-    title: "The Coffee House",
-    category: "Food & Dining",
-    date: "Today, 08:15 AM",
-    amount: "-$12.40",
-    type: "expense",
-  },
-  {
-    icon: CircleDollarSign,
-    title: "Salary Deposit",
-    category: "Income",
-    date: "Yesterday",
-    amount: "+$4,200.00",
-    type: "income",
-  },
-  {
-    icon: Car,
-    title: "Chevron Gas Station",
-    category: "Transportation",
-    date: "Yesterday",
-    amount: "-$54.20",
-    type: "expense",
-  },
-  {
-    icon: Home,
-    title: "Rent Payment",
-    category: "Housing",
-    date: "Aug 24, 2026",
-    amount: "-$1,200.00",
-    type: "expense",
-  },
-];
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  if (dateStr.includes("/")) {
+    const [d, m, y] = dateStr.split("/");
+    return new Date(`${y}-${m}-${d}`).toLocaleDateString("en-US", {
+      month: "short", day: "numeric",
+    });
+  }
+  const [y, m, d] = dateStr.split("-");
+  return new Date(`${y}-${m}-${d}`).toLocaleDateString("en-US", {
+    month: "short", day: "numeric",
+  });
+};
 
 const RecentActivityCard = () => {
+  const { recentActivity, fmt } = useDashboard();
+  const navigate = useNavigate();
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       <div className="mb-4 flex items-center justify-between">
@@ -61,46 +31,56 @@ const RecentActivityCard = () => {
           <p className="text-[10px] text-slate-400">Your latest transactions</p>
         </div>
 
-        <button className="flex items-center gap-1 text-[10px] font-semibold text-teal-700">
+        <button
+          onClick={() => navigate("/main/transactions")}
+          className="flex items-center gap-1 text-[10px] font-semibold text-teal-700 hover:underline cursor-pointer"
+        >
           View All
           <ChevronRight size={12} />
         </button>
       </div>
 
-      <div className="divide-y divide-slate-100">
-        {activities.map((activity) => {
-          const Icon = activity.icon;
-          return (
-            <div
-              key={activity.title}
-              className="flex items-center gap-3 py-3"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500">
-                <Icon size={14} />
-              </div>
+      {recentActivity.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-2 py-8 text-slate-300">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+            <rect x="9" y="3" width="6" height="4" rx="1" />
+          </svg>
+          <p className="text-[11px] text-slate-400">No transactions yet</p>
+          <p className="text-[10px] text-slate-300">Your recent transactions will appear here</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-slate-100">
+          {recentActivity.map((t) => {
+            const dotStyle = getCategoryStyle(t.transactionCategory);
+            const amtStyle = getAmountStyle(t.transactionType);
+            const sign = t.transactionType === "income" ? "+" : t.transactionType === "expense" ? "-" : "";
+            return (
+              <div key={t.id} className="flex items-center gap-3 py-3">
+                {/* Category dot */}
+                <div
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${dotStyle.badge}`}
+                >
+                  <span className={`h-2 w-2 rounded-full ${dotStyle.dot}`} />
+                </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[11px] font-semibold text-slate-700">
-                  {activity.title}
-                </p>
-                <p className="text-[9px] text-slate-400">
-                  {activity.category} · {activity.date}
-                </p>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11px] font-semibold text-slate-700">
+                    {t.transactionNote || t.transactionCategory || "Transaction"}
+                  </p>
+                  <p className="text-[9px] text-slate-400">
+                    {t.transactionCategory} · {formatDate(t.transactionDate)}
+                  </p>
+                </div>
 
-              <span
-                className={`text-[11px] font-semibold ${
-                  activity.type === "income"
-                    ? "text-emerald-600"
-                    : "text-slate-700"
-                }`}
-              >
-                {activity.amount}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+                <span className={`text-[11px] ${amtStyle}`}>
+                  {sign}{fmt(t.amount)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

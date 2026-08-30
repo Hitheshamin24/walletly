@@ -1,13 +1,12 @@
 import { Target, CalendarDays } from "lucide-react";
 
-/* Colour map — keyed by goal name to avoid hardcoded index checks */
 const GOAL_COLORS = {
   "Emergency Fund": "#0f766e",
   Vacation: "#3b82f6",
 };
 const DEFAULT_COLOR = "#6366f1";
 
-/* ── Single goal card ─────────────────────────────────────── */
+
 const GoalCard = ({ goal }) => {
   const color = GOAL_COLORS[goal.name] ?? DEFAULT_COLOR;
 
@@ -49,7 +48,7 @@ const GoalCard = ({ goal }) => {
   );
 };
 
-/* ── Savings goals section ────────────────────────────────── */
+/* Savings goals section */
 const SavingsGoals = ({ goals }) => {
   return (
     <div className="mt-5">

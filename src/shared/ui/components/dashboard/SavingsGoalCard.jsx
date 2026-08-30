@@ -1,10 +1,9 @@
-import { Target } from "lucide-react";
-
-const SAVED = 6400;
-const GOAL = 10000;
-const PERCENT = ((SAVED / GOAL) * 100).toFixed(0);
+import { Target, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router";
 
 const SavingsGoalCard = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       <div className="mb-3 flex items-center gap-2">
@@ -12,28 +11,31 @@ const SavingsGoalCard = () => {
           <Target size={14} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-800">Savings Goal</h3>
-          <p className="text-[9px] text-slate-400">Emergency fund</p>
+          <h3 className="text-sm font-semibold text-slate-800">Savings Goals</h3>
+          <p className="text-[9px] text-slate-400">Track your targets</p>
         </div>
       </div>
 
-      <div className="mb-2 flex items-end justify-between">
-        <span className="text-base font-bold text-slate-800">
-          ${SAVED.toLocaleString()}
-        </span>
-        <span className="text-[9px] text-slate-400">
-          of ${GOAL.toLocaleString()}
-        </span>
+      <div className="flex flex-col items-center justify-center gap-3 py-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+          <Target size={18} className="text-amber-300" />
+        </div>
+        <div className="text-center">
+          <p className="text-[11px] font-medium text-slate-500">
+            Goals Feature Coming Soon
+          </p>
+          <p className="text-[10px] text-slate-400">
+            Create savings goals and track your progress
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/main/goals")}
+          className="flex items-center gap-1 rounded-md bg-amber-50 px-3 py-1.5 text-[10px] font-medium text-amber-700 hover:bg-amber-100 transition cursor-pointer"
+        >
+          View Goals
+          <ArrowRight size={11} />
+        </button>
       </div>
-
-      <div className="h-2 rounded-full bg-slate-100">
-        <div
-          className="h-full rounded-full bg-amber-500"
-          style={{ width: `${PERCENT}%` }}
-        />
-      </div>
-
-      <p className="mt-2 text-[9px] text-slate-400">{PERCENT}% complete</p>
     </div>
   );
 };

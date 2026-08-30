@@ -1,28 +1,24 @@
 import { Plus } from "lucide-react";
 
-const BudgetHeader = () => {
+const BudgetHeader = ({ onNewBudget }) => {
   return (
     <div className="mb-4 flex items-start justify-between">
       <div>
         <h1 className="text-lg font-bold tracking-tight text-slate-900">
-          Budgets & Goals
+          Budgets
         </h1>
-        <p className="text-[8px] text-slate-500">
-          Track your spending limits and savings milestones.
+        <p className="text-[11px] text-slate-500">
+          Track your spending limits and stay on top of your monthly goals.
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button className="flex h-6 items-center gap-1 rounded border border-slate-200 bg-white px-2 text-[7px] font-semibold text-slate-600 shadow-sm hover:bg-slate-50">
-          <Plus size={8} />
-          Create Goal
-        </button>
-
-        <button className="flex h-6 items-center gap-1 rounded bg-teal-700 px-2 text-[7px] font-semibold text-white shadow-sm hover:bg-teal-800">
-          <Plus size={8} />
-          Set New Budget
-        </button>
-      </div>
+      <button
+        onClick={onNewBudget}
+        className="flex h-8 items-center gap-1.5 rounded-md bg-teal-700 px-3 text-[11px] font-semibold text-white shadow-sm hover:bg-teal-800 transition cursor-pointer"
+      >
+        <Plus size={12} strokeWidth={2.5} />
+        Set New Budget
+      </button>
     </div>
   );
 };
