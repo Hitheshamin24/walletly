@@ -159,7 +159,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
 
           {/* Institution & Last 4 Digits */}
           {selectedType !== "wallet" && (
-            <div className="mb-3 grid grid-cols-2 gap-3">
+            <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="mb-1 block text-[10px] font-medium text-slate-700">
                   Bank / Institution
@@ -217,7 +217,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
           </div>
 
           {/* Color & Currency */}
-          <div className="mb-3 grid grid-cols-2 gap-3">
+          <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-[10px] font-medium text-slate-700">
                 Card Color

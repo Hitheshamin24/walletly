@@ -164,7 +164,7 @@ const TransactionForm = () => {
           </div>
 
           {/* Category + Payment Method */}
-          <div className="mb-4 grid grid-cols-2 gap-3">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Category */}
             <div>
               <label className="mb-1 block text-[10px] font-medium text-slate-700">
@@ -241,7 +241,7 @@ const TransactionForm = () => {
           </div>
 
           {/* Date + Account */}
-          <div className="mb-4 grid grid-cols-2 gap-3">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Date */}
             <div>
               <label className="mb-1.5 block text-[10px] font-medium text-slate-700">

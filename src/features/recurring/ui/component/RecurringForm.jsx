@@ -77,7 +77,7 @@ const RecurringForm = ({ onClose, itemToEdit }) => {
           </div>
 
           {/* Type + Category */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-[10px] font-medium text-slate-700">Type</label>
               <select
@@ -101,7 +101,7 @@ const RecurringForm = ({ onClose, itemToEdit }) => {
           </div>
 
           {/* Amount + Frequency */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-[10px] font-medium text-slate-700">Amount</label>
               <input
