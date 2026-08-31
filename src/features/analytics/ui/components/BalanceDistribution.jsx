@@ -18,10 +18,10 @@ const BalanceDistribution = ({ distribution }) => {
           className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full"
           style={{ background: gradientStr }}
         >
-          <div className="flex h-14 w-14 flex-col items-center justify-center rounded-full bg-white">
+          <div className="flex h-14 w-14 flex-col items-center justify-center rounded-full bg-white px-1">
             <span className="text-[6px] text-slate-400">Total</span>
-            <span className="text-[10px] font-bold text-slate-800 truncate w-12 text-center">
-               {totalBalance > 1000000 ? (totalBalance/1000000).toFixed(1) + "M" : totalBalance >= 1000 ? (totalBalance/1000).toFixed(1) + "k" : totalBalance}
+            <span className="text-[10px] font-bold text-slate-800 text-center w-full break-all leading-tight">
+               {totalBalance >= 1000000 ? (totalBalance/1000000).toFixed(1) + "M" : totalBalance >= 1000 ? (totalBalance/1000).toFixed(1) + "k" : Number(totalBalance).toFixed(0)}
             </span>
           </div>
         </div>
