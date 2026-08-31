@@ -14,7 +14,7 @@ const NetWorthCard = () => {
   let totalLiabilities = 0;
   
   accounts.forEach((acc) => {
-     const bal = Number(acc.currentBalance ?? 0);
+     const bal = (Number(acc.currentBalance) || 0);
      if (bal >= 0) totalAssets += bal;
      else totalLiabilities += bal;
   });

@@ -13,7 +13,7 @@ const DistributionCard = () => {
     };
 
     accounts.forEach(acc => {
-       const bal = Math.abs(Number(acc.currentBalance ?? 0));
+       const bal = Math.abs((Number(acc.currentBalance) || 0));
        total += bal;
        typeTotals[acc.accountType || "bank"] += bal;
     });

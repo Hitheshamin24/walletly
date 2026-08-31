@@ -42,12 +42,12 @@ export const useAnalyticsHook = () => {
 
   // 1. Balance Distribution
   const balanceDistribution = useMemo(() => {
-    const totalBalance = accounts.reduce((sum, a) => sum + Number(a.currentBalance ?? 0), 0);
+    const totalBalance = accounts.reduce((sum, a) => sum + (Number(a.currentBalance) || 0), 0);
     const balanceItems = accounts.map((a) => ({
       name: a.accountName,
-      amount: fmt(Number(a.currentBalance ?? 0)),
-      rawAmount: Number(a.currentBalance ?? 0),
-      percentage: totalBalance > 0 ? Math.round((Number(a.currentBalance ?? 0) / totalBalance) * 100) + "%" : "0%",
+      amount: fmt((Number(a.currentBalance) || 0)),
+      rawAmount: (Number(a.currentBalance) || 0),
+      percentage: totalBalance > 0 ? Math.round(((Number(a.currentBalance) || 0) / totalBalance) * 100) + "%" : "0%",
       color: a.color || "#0d9488",
     })).sort((a, b) => b.rawAmount - a.rawAmount);
 
@@ -79,7 +79,7 @@ export const useAnalyticsHook = () => {
     const catExpenses = {};
 
     transactions.forEach(t => {
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       if (getMonthKey(t.transactionDate) !== thisMonthStr) return;
       
       if (t.transactionType === "expense") {
@@ -139,7 +139,7 @@ export const useAnalyticsHook = () => {
       if (t.transactionType !== "expense") return;
       const key = getMonthKey(t.transactionDate);
       const cat = t.transactionCategory || "Other";
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
 
       if (key === thisMonthStr) {
         thisMonthCats[cat] = (thisMonthCats[cat] ?? 0) + amt;
@@ -205,7 +205,7 @@ export const useAnalyticsHook = () => {
       const key = getMonthKey(t.transactionDate);
       const entry = months.find((m) => m.key === key);
       if (!entry) return;
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       if (t.transactionType === "income") entry.income += amt;
       else if (t.transactionType === "expense") entry.expense += amt;
     });

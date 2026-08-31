@@ -29,7 +29,7 @@ export const useBudgetHook = () => {
       const key = getMonthKey(t.transactionDate);
       if (key !== thisMonth) return;
       const cat = (t.transactionCategory || "Other").toLowerCase();
-      map[cat] = (map[cat] ?? 0) + Number(t.amount ?? 0);
+      map[cat] = (map[cat] ?? 0) + (Number(t.amount) || 0);
     });
     return map;
   }, [transactions, thisMonth]);
@@ -39,7 +39,7 @@ export const useBudgetHook = () => {
     return budgets.map((b) => {
       const categoryKey = b.category.toLowerCase();
       const spent = spentByCategory[categoryKey] ?? 0;
-      const limit = Number(b.limit);
+      const limit = (Number(b.limit) || 0);
       const percentage = limit > 0 ? (spent / limit) * 100 : 0;
       const isOver = spent > limit;
       return { ...b, spent, percentage: Math.round(percentage), isOver };
@@ -64,7 +64,7 @@ export const useBudgetHook = () => {
         id: Date.now(),
         name: data.name,
         category: data.category,
-        limit: Number(data.limit),
+        limit: (Number(data.limit) || 0),
         period: "monthly",
         color: data.color || "#0f766e",
       }),
@@ -79,7 +79,7 @@ export const useBudgetHook = () => {
         id,
         name: data.name,
         category: data.category,
-        limit: Number(data.limit),
+        limit: (Number(data.limit) || 0),
         period: "monthly",
         color: data.color || "#0f766e",
       }),

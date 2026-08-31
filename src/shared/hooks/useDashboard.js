@@ -55,7 +55,7 @@ export const useDashboard = () => {
 
   //  Stats 
   const stats = useMemo(() => {
-    const totalBalance = accounts.reduce((sum, a) => sum + Number(a.currentBalance ?? 0), 0);
+    const totalBalance = accounts.reduce((sum, a) => sum + (Number(a.currentBalance) || 0), 0);
 
     const now = new Date();
     const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -66,7 +66,7 @@ export const useDashboard = () => {
     transactions.forEach((t) => {
       const key = getMonthKey(t.transactionDate);
       if (key !== thisMonth) return;
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       if (t.transactionType === "income") monthlyIncome += amt;
       else if (t.transactionType === "expense") monthlyExpense += amt;
     });
@@ -94,7 +94,7 @@ export const useDashboard = () => {
       const key = getMonthKey(t.transactionDate);
       const entry = months.find((m) => m.key === key);
       if (!entry) return;
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       if (t.transactionType === "income") entry.income += amt;
       else if (t.transactionType === "expense") entry.expense += amt;
     });
@@ -121,7 +121,7 @@ export const useDashboard = () => {
       if (t.transactionType !== "expense") return;
       const key = getMonthKey(t.transactionDate);
       if (key !== thisMonth) return;
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       const cat = t.transactionCategory || "Other";
       categoryMap[cat] = (categoryMap[cat] ?? 0) + amt;
       totalExpense += amt;
@@ -143,7 +143,7 @@ export const useDashboard = () => {
     transactions.forEach((t) => {
       const key = getMonthKey(t.transactionDate);
       if (key !== thisMonth) return;
-      const amt = Number(t.amount ?? 0);
+      const amt = (Number(t.amount) || 0);
       if (t.transactionType === "expense") spent += amt;
       if (t.transactionType === "income") earned += amt;
     });

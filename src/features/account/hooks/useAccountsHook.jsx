@@ -33,7 +33,7 @@ export const useAccountHook = () => {
     );
     if (exists) return toast.error("Account number already exists");
 
-    const initialBalance = Number(data.initialBalance);
+    const initialBalance = (Number(data.initialBalance) || 0);
     if (accountToEdit) {
       dispatch(
         updateAccount({

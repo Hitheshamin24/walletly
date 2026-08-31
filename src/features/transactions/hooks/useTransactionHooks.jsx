@@ -27,9 +27,9 @@ export const useTransactionData = () => {
     const updatedAccount = { ...account };
 
     if (transaction.transactionType === "income") {
-      updatedAccount.currentBalance -= Number(transaction.amount);
+      updatedAccount.currentBalance -= (Number(transaction.amount) || 0);
     } else {
-      updatedAccount.currentBalance += Number(transaction.amount);
+      updatedAccount.currentBalance += (Number(transaction.amount) || 0);
     }
 
     dispatch(removeTransaction(transaction.id));
@@ -63,7 +63,7 @@ export const useTransactionForm = () => {
   });
 
   const handleTransaction = (data, editingTransaction, onClose) => {
-    const amount = Number(data.amount);
+    const amount = (Number(data.amount) || 0);
 
     const newAccount = accounts.find(
       (account) => account.id === Number(data.transactionAccount)
@@ -89,9 +89,9 @@ export const useTransactionForm = () => {
         const updatedNewAccount = { ...newAccount };
 
         if (editingTransaction.transactionType === "income") {
-          updatedOldAccount.currentBalance -= Number(editingTransaction.amount);
+          updatedOldAccount.currentBalance -= (Number(editingTransaction.amount) || 0);
         } else {
-          updatedOldAccount.currentBalance += Number(editingTransaction.amount);
+          updatedOldAccount.currentBalance += (Number(editingTransaction.amount) || 0);
         }
 
         if (data.transactionType === "income") {
@@ -118,9 +118,9 @@ export const useTransactionForm = () => {
         const updatedAccount = { ...newAccount };
 
         if (editingTransaction.transactionType === "income") {
-          updatedAccount.currentBalance -= Number(editingTransaction.amount);
+          updatedAccount.currentBalance -= (Number(editingTransaction.amount) || 0);
         } else {
-          updatedAccount.currentBalance += Number(editingTransaction.amount);
+          updatedAccount.currentBalance += (Number(editingTransaction.amount) || 0);
         }
 
         if (data.transactionType === "income") {
