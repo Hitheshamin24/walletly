@@ -99,6 +99,11 @@ export const useTransactionForm = () => {
         } else {
           updatedNewAccount.currentBalance -= amount;
         }
+        
+        if (updatedNewAccount.currentBalance < 0) {
+          toast.error("Insufficient balance in new account");
+          return;
+        }
 
         const updatedTransaction = {
           ...editingTransaction,
@@ -129,6 +134,11 @@ export const useTransactionForm = () => {
           updatedAccount.currentBalance -= amount;
         }
 
+        if (updatedAccount.currentBalance < 0) {
+          toast.error("Insufficient balance");
+          return;
+        }
+
         const updatedTransaction = {
           ...editingTransaction,
           ...data,
@@ -150,6 +160,11 @@ export const useTransactionForm = () => {
         updatedAccount.currentBalance += amount;
       } else {
         updatedAccount.currentBalance -= amount;
+      }
+      
+      if (updatedAccount.currentBalance < 0) {
+        toast.error("Insufficient balance");
+        return;
       }
 
       const newTransaction = {
