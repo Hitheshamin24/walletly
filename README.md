@@ -37,7 +37,6 @@
 - [💾 Data Persistence & Multi-User Architecture](#-data-persistence--multi-user-architecture)
 - [🚀 Deployment](#-deployment)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
 - [👨‍💻 Author](#-author)
 
 ---
@@ -270,11 +269,6 @@ Contributions are always welcome! If you'd like to improve Walletly:
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** — feel free to use it for personal or commercial projects.
-
----
 
 ## 👨‍💻 Author
 
