@@ -36,7 +36,7 @@ const StatsGrid = () => {
   ];
 
   return (
-    <section className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
+    <section className="mb-5 grid grid-cols-1 sm:grid-cols-2 gap-3 xl:grid-cols-4">
       {items.map((stat) => {
         const Icon = stat.icon;
         return (

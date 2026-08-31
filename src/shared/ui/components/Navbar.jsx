@@ -12,7 +12,7 @@ import {
 import { NavLink } from "react-router";
 import { useTransactionContext } from "../../context/TransactionFormContext";
 
-const Navbar = () => {
+const Navbar = ({ isOpen, setIsOpen }) => {
 
   const {setShowTransactionModal}=useTransactionContext()
   const menuItems = [
@@ -54,7 +54,7 @@ const Navbar = () => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-55 flex-col border-r border-slate-200 bg-white px-3 py-4">
+    <aside className={`fixed left-0 top-0 z-40 flex h-screen w-55 flex-col border-r border-slate-200 bg-white px-3 py-4 transition-transform duration-300 md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Logo */}
       <div className="mb-5 flex items-center gap-2 px-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg  text-sm font-bold text-white">

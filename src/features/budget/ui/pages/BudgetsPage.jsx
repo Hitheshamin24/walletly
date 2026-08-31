@@ -35,7 +35,7 @@ const BudgetsPage = () => {
           <BudgetHeader onNewBudget={openNew} />
 
           {/* Summary strip */}
-          <div className="mb-5 grid grid-cols-3 gap-3">
+          <div className="mb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
               <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
                 Total Budgets
