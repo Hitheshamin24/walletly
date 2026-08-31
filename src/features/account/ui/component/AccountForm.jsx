@@ -209,7 +209,7 @@ const AccountForm = ({ onClose, accountToEdit }) => {
                 {...register("initialBalance", {
                   required: "Initial balance is required",
                 })}
-                type="number"
+                type="text"
                 placeholder="0.00"
                 className="h-9 w-full rounded-md border border-slate-200 bg-white pl-7 pr-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20"
               />
